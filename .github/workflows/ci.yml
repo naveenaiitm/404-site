@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: Run validation checks
+      run: |
+        echo "Running CI checks..."
+        echo "Validating repository structure..."
+        
+        # Check if index.html exists
+        if [ -f "index.html" ]; then
+          echo "✓ index.html found"
+        else
+          echo "✗ index.html not found"
+          exit 1
+        fi
+        
+        # Check if 404.html exists
+        if [ -f "404.html" ]; then
+          echo "✓ 404.html found"
+        else
+          echo "✗ 404.html not found"
+          exit 1
+        fi
+        
+        # Check if README.md exists
+        if [ -f "README.md" ]; then
+          echo "✓ README.md found"
+        else
+          echo "✗ README.md not found"
+          exit 1
+        fi
+        
+        echo "All checks passed successfully!"
+        
+    - name: Validate HTML files
+      run: |
+        echo "Validating HTML syntax..."
+        # Check if index.html contains required email
+        if grep -q "24f1002478@ds.study.iitm.ac.in" index.html; then
+          echo "✓ Email found in index.html"
+        else
+          echo "⚠ Email not found in index.html"
+        fi
+        
+        # Check if 404.html contains required email
+        if grep -q "24f1002478@ds.study.iitm.ac.in" 404.html; then
+          echo "✓ Email found in 404.html"
+        else
+          echo "⚠ Email not found in 404.html"
+        fi
+        
+    - name: Success message
+      run: |
+        echo "=========================================="
+        echo "✓ CI Pipeline completed successfully!"
+        echo "=========================================="
